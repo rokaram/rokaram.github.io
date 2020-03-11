@@ -1,0 +1,131 @@
+body {
+	margin: 0;
+	padding: 0;
+    min-width: 320px;
+    min-height: 100vh;
+    overflow-x: hidden;
+    user-select: none;
+
+    color: #000;
+	background-color: #fff;
+	font-size: 17px;
+	font-family: 'Nunito', sans-serif;
+}
+
+*,
+*:after,
+*:before {
+	margin: 0;
+	padding: 0;
+	scroll-behavior: smooth;
+	box-sizing: border-box;
+}
+
+ul, li {
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+
+a {
+	text-decoration: none;
+}
+
+h1, h2, h3, h4, h5, h6 {
+	margin: 0;
+	padding: 0;
+}
+
+input,
+textarea {
+    outline: none;
+    resize: none;
+}
+
+.hide {
+    display: none;
+}
+
+.container {
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+/* Header */
+.header {
+    position: fixed;
+    top: 0;left: 0;right: 0;
+    background: #fff;
+}
+
+.header__inner {
+    text-align: center;
+    padding: 20px 0;
+}
+
+
+/* Nav */
+.nav__link {
+    margin: 0 10px;
+}
+
+
+/* Gameplay */
+.gameplay {
+    padding-top: 30px;
+    margin-bottom: 100px;
+}
+
+.gameplay__header {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 50px;
+}
+
+.gameplay__main {
+    text-align: center;
+}
+
+.gameplay__main-btn {
+    font-size: 25px;
+    width: 250px;
+    height: 250px;
+    outline: none;
+    background: #ccc;
+    border: 1px solid #000000;
+    border-radius: 50%;
+    transition: all .05s linear;
+    cursor: pointer;
+}
+
+.gameplay__main-btn:active {
+    box-shadow: 0 0 100px 5px rgba(0, 0, 0, 0.4);
+    background: rgba(0, 0, 0, 0.4);
+}
+
+
+/* Market */
+.market__inner {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.market__container {
+    width: 33.33333%;
+    padding: 10px;
+}
+
+.market__item {
+    cursor: pointer;
+    padding: 7px;
+    border: 1px solid #000;
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.market__item-img {
+    width: 100%;
+    background-color: #ccc;
+}
