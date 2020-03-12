@@ -1,5 +1,5 @@
 /softino/node_modules/wow.js/*
-!/softino/node_modules/wow.js/dist/*
+!/softino/node_modules/wow.js/dist/
 
 /softino/node_modules/animate.css/*
 !/softino/node_modules/animate.css/animate.css
