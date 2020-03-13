@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Canvas Works</title>
+	<link href="https://fonts.googleapis.com/css?family=Heebo:400,500,900|Nunito:400,600,700&display=swap" rel="stylesheet">
+
+	<style>
+		
+		body {
+			margin: 0;
+			padding: 0;
+			min-width: 320px;
+			overflow-x: hidden;
+
+		    color: #1c1d3e;
+			font-size: 16px;
+			font-family: 'Nunito', sans-serif;
+		}
+
+		*,
+		*:after,
+		*:before {
+			margin: 0;
+			padding: 0;
+			box-sizing: border-box;
+		}
+
+		.dnone {
+			display: none;
+		}
+
+		.canvas {
+			position: absolute;
+			z-index: 100;
+			display: block;
+		}
+
+		.canvas-container {
+			position: relative;
+			width: 100%;
+			height: 100vh;
+		}
+
+		h1 {
+			background: #fff;
+			position: relative;
+			z-index: 1000;
+			user-select: none;
+		}
+
+		h1:before {
+			content: "";
+			position: absolute;
+			width: 100%;
+			height: 2px;
+			background: #000;
+		}
+
+		h1:after {
+			content: "";
+			display: block;
+			position: absolute;
+			width: 100%;
+			height: 2px;
+			background: #000;
+		}
+
+	</style>
+</head>
+<body>
+	
+	<section class="canvas-container cvsDandM-container">
+		<canvas class="canvas canvasDotAndMouse"></canvas>
+		<h1>Mouse And Dots</h1>
+	</section>
+
+	<section class="canvas-container canvasPaint-container">
+		<canvas class="canvas canvasPaint"></canvas>
+		<h1>Paint</h1>
+	</section>
+
+	<section class="canvas-container canvasForms-container">
+		<canvas class="canvas canvasForms"></canvas>
+		<h1>Forms</h1>
+	</section>
+
+	<section class="canvas-container canvasRays-container">
+		<canvas class="canvas canvasRays"></canvas>
+		<h1>Rays</h1>
+	</section>
+	
+
+	<script>		
+
+	
+		window.addEventListener('scroll', () => {
+			if(pageYOffset > 300) {
+				pageYOffset = 0;
+			}
+		});
+
+
+		// Mouse and Dots
+		let 
+			cvsDandM = document.querySelector('.canvasDotAndMouse'),
+			ctxDandM = cvsDandM.getContext('2d'),
+			isMouseDown = false;
+
+		cvsDandM.width = window.innerWidth;
+		cvsDandM.height = window.innerHeight;
+
+		let	
+			xMouse,
+			yMouse,
+			xDot = cvsDandM.width / cvsDandM.width,
+			yDot = cvsDandM.height / cvsDandM.height,
+
+			xDot1 = cvsDandM.width,
+			yDot1 = cvsDandM.height,
+
+			xDot2 = cvsDandM.width / cvsDandM.width,
+			yDot2 = cvsDandM.height,
+
+			xDot3 = cvsDandM.width,
+			yDot3 = cvsDandM.height / cvsDandM.height,
+
+			xDot4 = cvsDandM.width / 2,
+			yDot4 = cvsDandM.height / cvsDandM.height,
+
+			xDot5 = cvsDandM.width / 2,
+			yDot5 = cvsDandM.height,
+
+			xDot6 = cvsDandM.width / cvsDandM.width,
+			yDot6 = cvsDandM.height / 2,
+
+			xDot7 = cvsDandM.width,
+			yDot7 = cvsDandM.height / 2,
+
+			sizeDot = 6,
+			timer;
+
+		function drawDot() {
+			ctxDandM.clearRect(0, 0, cvsDandM.width, cvsDandM.width);
+
+			ctxDandM.fillRect(xDot - (sizeDot / 2), yDot - (sizeDot / 2), sizeDot, sizeDot);
+			ctxDandM.fillRect(xDot1 - (sizeDot / 2), yDot1 - (sizeDot / 2), sizeDot, sizeDot);
+			ctxDandM.fillRect(xDot2 - (sizeDot / 2), yDot2 - (sizeDot / 2), sizeDot, sizeDot);
+			ctxDandM.fillRect(xDot3 - (sizeDot / 2), yDot3 - (sizeDot / 2), sizeDot, sizeDot);
+			ctxDandM.fillRect(xDot4 - (sizeDot / 2), yDot4 - (sizeDot / 2), sizeDot, sizeDot);
+			ctxDandM.fillRect(xDot5 - (sizeDot / 2), yDot5 - (sizeDot / 2), sizeDot, sizeDot);
+			ctxDandM.fillRect(xDot6 - (sizeDot / 2), yDot6 - (sizeDot / 2), sizeDot, sizeDot);
+			ctxDandM.fillRect(xDot7 - (sizeDot / 2), yDot7 - (sizeDot / 2), sizeDot, sizeDot);
+
+			ctxDandM.beginPath();
+			ctxDandM.moveTo(xDot, yDot);
+			ctxDandM.lineTo(xMouse, yMouse);
+			ctxDandM.stroke();
+
+			ctxDandM.beginPath();
+			ctxDandM.moveTo(xDot1, yDot1);
+			ctxDandM.lineTo(xMouse, yMouse);
+			ctxDandM.stroke();
+
+			ctxDandM.beginPath();
+			ctxDandM.moveTo(xDot2, yDot2);
+			ctxDandM.lineTo(xMouse, yMouse);
+			ctxDandM.stroke();
+
+			ctxDandM.beginPath();
+			ctxDandM.moveTo(xDot3, yDot3);
+			ctxDandM.lineTo(xMouse, yMouse);
+			ctxDandM.stroke();
+
+			ctxDandM.beginPath();
+			ctxDandM.moveTo(xDot4, yDot4);
+			ctxDandM.lineTo(xMouse, yMouse);
+			ctxDandM.stroke();
+
+			ctxDandM.beginPath();
+			ctxDandM.moveTo(xDot5, yDot5);
+			ctxDandM.lineTo(xMouse, yMouse);
+			ctxDandM.stroke();
+
+			ctxDandM.beginPath();
+			ctxDandM.moveTo(xDot6, yDot6);
+			ctxDandM.lineTo(xMouse, yMouse);
+			ctxDandM.stroke();
+
+			ctxDandM.beginPath();
+			ctxDandM.moveTo(xDot7, yDot7);
+			ctxDandM.lineTo(xMouse, yMouse);
+			ctxDandM.stroke();
+
+			timer = setTimeout(drawDot, 0.1);
+		}
+
+		drawDot();
+
+		cvsDandM.addEventListener('mousemove', (evt) => {
+			xMouse = evt.offsetX;
+			yMouse = evt.offsetY;
+		});
+
+
+
+		// Paint
+		let 
+			cvsPaint = document.querySelector('.canvasPaint'),
+			ctxPaint = cvsPaint.getContext('2d'),
+			radius = 5;
+
+		cvsPaint.width = window.innerWidth;
+		cvsPaint.height = window.innerHeight;
+
+		ctxPaint.lineWidth = radius * 2;
+
+		cvsPaint.addEventListener('mouseup', (evt) => {
+			isMouseDown = false;
+			ctxPaint.beginPath();
+		});
+
+		cvsPaint.addEventListener('mousedown', (evt) => {
+			isMouseDown = true;
+		});
+
+		cvsPaint.addEventListener('mousemove', (evt) => {
+			let radius = 5;
+
+			if ( isMouseDown ) {
+
+	    		ctxPaint.lineTo(evt.offsetX, evt.offsetY);
+	    		ctxPaint.stroke();
+
+	    		ctxPaint.beginPath();
+			    ctxPaint.arc(evt.offsetX, evt.offsetY, radius, 0, Math.PI * 2);
+			    ctxPaint.fill();
+
+			    ctxPaint.beginPath();
+			    ctxPaint.moveTo(evt.offsetX, evt.offsetY);
+			}
+	    });
+
+	    document.addEventListener('keydown', (evt) => {
+	    	if( evt.code == 'KeyC' ) {
+	    		ctxPaint.clearRect(0, 0, cvsPaint.width, cvsPaint.height);
+	    	}
+	    });
+
+
+		// Forms
+	    let 
+			cvsForms = document.querySelector('.canvasForms'),
+			ctxForms = cvsForms.getContext('2d'),
+			form;
+			bigSize = 7;
+
+		cvsForms.width = window.innerWidth;
+		cvsForms.height = window.innerHeight;
+
+
+		cvsForms.addEventListener('mouseup', () => {
+			isMouseDown = false;
+			ctxPaint.beginPath();
+		});
+
+		cvsForms.addEventListener('mousedown', () => {
+			isMouseDown = true;
+		});
+
+
+		cvsForms.addEventListener('mousemove', (evt) => {
+			if ( isMouseDown ) {
+
+				let radius = Math.round(Math.random() * (10 - 5) + 7);
+				form = Math.floor(Math.random() * 4);
+
+			    switch( form ) {
+			    	case 0:
+			    		ctxForms.beginPath()
+					    ctxForms.arc(evt.offsetX, evt.offsetY, radius, 0, Math.PI * 2);
+					    ctxForms.stroke();
+					    break;
+
+					case 1:
+			    		ctxForms.beginPath();
+					    ctxForms.arc(evt.offsetX, evt.offsetY, radius, 0, Math.PI * 2);
+					    ctxForms.fill();
+					    break;
+
+					case 2:
+			    		ctxForms.beginPath();
+					    ctxForms.fillRect(evt.offsetX - (radius / 2), evt.offsetY - (radius / 2), radius, radius);
+					    ctxForms.fill();
+					    break;
+
+					case 3:
+			    		ctxForms.beginPath();
+					    ctxForms.rect(evt.offsetX - (radius / 2), evt.offsetY - (radius / 2), radius, radius);
+					    ctxForms.stroke();
+					    break;
+			    }
+
+			}
+	    });
+
+
+	    function formBigSize(evt) {
+	    	switch( form ) {
+		    	case 0:
+		    		ctxForms.beginPath();
+				    ctxForms.arc(evt.offsetX, evt.offsetY, radius * bigSize, 0, Math.PI * 2);
+				    ctxForms.stroke();
+				    break;
+
+				case 1:
+		    		ctxForms.beginPath();
+				    ctxForms.arc(evt.offsetX, evt.offsetY, radius * bigSize, 0, Math.PI * 2);
+				    ctxForms.fill();
+				    break;
+
+				case 2:
+		    		ctxForms.beginPath();
+				    ctxForms.fillRect(evt.offsetX - (radius * bigSize / 2), evt.offsetY - (radius * bigSize / 2), radius * bigSize, radius * bigSize);
+				    ctxForms.fill();
+				    break;
+
+				case 3:
+		    		ctxForms.beginPath();
+				    ctxForms.rect(evt.offsetX - (radius * bigSize / 2), evt.offsetY - (radius * bigSize / 2), radius * bigSize, radius * bigSize);
+				    ctxForms.stroke();
+				    break;
+		    }
+	    }
+
+
+	    cvsForms.addEventListener('mouseup', (evt) => {
+			formBigSize(evt);
+	    });
+
+	    cvsForms.addEventListener('mousedown', (evt) => {
+			formBigSize(evt);
+	    });
+
+
+	    // Rays
+		let 
+			cvsRays = document.querySelector('.canvasRays'),
+			ctxRays = cvsRays.getContext('2d'),
+
+		minus = 0,
+		minusa = 0,
+		plus = 0,
+		plusa = 0;
+
+		widthLines = 100;
+		widthGorizLines = 70;
+
+		cvsRays.width = window.innerWidth;
+		cvsRays.height = window.innerHeight;
+
+		ctxRays.lineWidth = 5;
+
+		function drawLines() {
+			ctxRays.clearRect(0, 0, cvsRays.width, cvsRays.height);
+
+			ctxRays.beginPath();
+			ctxRays.moveTo(xMouse - widthLines, yMouse);
+			ctxRays.lineTo(xMouse, yMouse);
+			ctxRays.stroke();
+
+			ctxRays.beginPath();
+			ctxRays.moveTo(xMouse, yMouse - widthLines);
+			ctxRays.lineTo(xMouse, yMouse);
+			ctxRays.stroke();
+
+			ctxRays.beginPath();
+			ctxRays.moveTo(xMouse - widthGorizLines, yMouse - widthGorizLines);
+			ctxRays.lineTo(xMouse, yMouse);
+			ctxRays.stroke();
+
+			ctxRays.beginPath();
+			ctxRays.moveTo(xMouse + widthLines, yMouse);
+			ctxRays.lineTo(xMouse, yMouse);
+			ctxRays.stroke();
+
+			ctxRays.beginPath();
+			ctxRays.moveTo(xMouse, yMouse + widthLines);
+			ctxRays.lineTo(xMouse, yMouse);
+			ctxRays.stroke();
+
+			ctxRays.beginPath();
+			ctxRays.moveTo(xMouse + widthGorizLines, yMouse + widthGorizLines);
+			ctxRays.lineTo(xMouse, yMouse);
+			ctxRays.stroke();
+
+			ctxRays.beginPath();
+			ctxRays.moveTo(xMouse - widthGorizLines, yMouse + widthGorizLines);
+			ctxRays.lineTo(xMouse, yMouse);
+			ctxRays.stroke();
+
+			ctxRays.beginPath();
+			ctxRays.moveTo((xMouse + widthGorizLines), yMouse - widthGorizLines);
+			ctxRays.lineTo(xMouse, yMouse);
+			ctxRays.stroke();
+
+			timer = setTimeout(drawLines, 0.1)
+		}
+
+		drawLines();
+
+		cvsRays.addEventListener('mousedown', (evt) => {
+			isMouseDown = true;
+
+			plus = 1;
+			plusa = 0.7;
+
+			minusa = 0;
+			minus = 0;
+
+			setInterval (() =>
+				widthGorizLines += plusa
+			, 5)
+
+			setInterval (() =>
+				widthLines += plus
+			, 5)
+		});
+
+		cvsRays.addEventListener('mouseup', (evt) => {
+			isMouseDown = false;
+
+			plus = 0;
+			plusa = 0;
+
+			minusa = 0.7;
+			minus = 1;
+
+			setInterval (() =>
+				checkedMinus()
+			, 0.000001)
+
+			if(widthGorizLines > 70) {
+				setInterval (() =>
+					widthGorizLines -= minusa
+				, 2.5)
+
+				setInterval (() =>
+					widthLines -= minus
+				, 2.5)
+			}
+		});
+
+		cvsRays.addEventListener('mousemove', (evt) => {
+			xMouse = evt.offsetX;
+			yMouse = evt.offsetY;
+		});
+
+		function checkedMinus() {
+			if(widthGorizLines <= 70) {
+				minusa = 0;
+				minus = 0;
+
+				widthLines = 100;
+				widthGorizLines = 70;
+			}
+		}
+
+
+
+
+		let s = 5;
+
+		let inter = setInterval (() =>
+				dada()
+			, 1000)
+
+		function dada() {
+			
+			if(s == 0) {
+				console.log(s + ' Отчет закончился');
+				clearInterval(inter)
+			} 
+			else {
+				s--;
+				console.log(s)
+			}
+		}
+		
+
+	</script>
+
+</body>
+</html>
