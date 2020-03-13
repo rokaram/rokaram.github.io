@@ -95,8 +95,12 @@ textarea {
     background: #ccc;
     border: 1px solid #000000;
     border-radius: 50%;
-    transition: all .05s linear;
     cursor: pointer;
+    transition: transform .2s ease;
+}
+
+.gameplay__main-btn:hover {
+    transform: scale(1.05);
 }
 
 .gameplay__main-btn:active {
@@ -109,10 +113,11 @@ textarea {
 .market__inner {
     display: flex;
     flex-wrap: wrap;
+    justify-content: center;
 }
 
 .market__container {
-    width: 33.33333%;
+    width: 50%;
     padding: 10px;
 }
 
@@ -128,4 +133,10 @@ textarea {
 .market__item-img {
     width: 100%;
     background-color: #ccc;
+}
+
+@media (max-width: 500px) {
+    .market__container {
+        width: 100%;
+    }
 }
