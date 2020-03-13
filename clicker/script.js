@@ -5,6 +5,8 @@ const countMoneyOut = document.querySelector('.gameplay__header-money');
 const powerClickOut = document.querySelector('.gameplay__header-force');
 const btnClick = document.querySelector('.gameplay__main-btn');
 
+let marketItemAll = document.querySelectorAll('.market__item');
+
 let isPowerPlus = false;
 let isAutoClick = false;
 
@@ -13,11 +15,13 @@ let countMoney = localStorage.getItem('countMoney');
 let powerClick = 0;
 let pluser = localStorage.getItem('pluser');
 
+// information output if this new game
 if( !pluser ) {
     currentClicksOut.innerHTML = `Всего кликов: 0`;
     countMoneyOut.innerHTML = `0$`;
     powerClickOut.innerHTML = `Сила: ${++pluser}`;
 }
+
 
 // money save in localStorage
 function saveMoney(isSave) {
@@ -25,7 +29,8 @@ function saveMoney(isSave) {
     countMoney = localStorage.getItem('countMoney');
 }
 
-// current clicks and count
+
+// information output after page reload
 if( currentClicks ) {
     currentClicksOut.innerHTML = `Всего кликов: ${currentClicks}`;
     countMoneyOut.innerHTML = `${countMoney}$`;
@@ -44,6 +49,7 @@ btnClick.addEventListener('click', function() {
     countMoneyOut.innerHTML = (countMoney > 0) ? `${countMoney}$` : '0$';
 });
 
+
 // localStorage clear
 window.addEventListener('keydown', ({ key }) => {
     if(key == 'F5') {
@@ -51,27 +57,34 @@ window.addEventListener('keydown', ({ key }) => {
     }
 });
 
+
 // draw products
 const market = document.querySelector('.market__inner');
-
+let timeForAutoClick = localStorage.getItem('timeForAutoClick');
 const productInfo = [
     {   
         productUseful: 1,
         productName: `+2 к силе Кликера`,
         productPrice: 20,
         productFunctionUseful: function() {
-            powerClickOut.innerHTML = `Сила: ${++pluser}`;
+            localStorage.setItem('pluser', ++pluser)
+            powerClickOut.innerHTML = `Сила: ${pluser}`;
         }
     },
     {
-        productUseful: 120,
-        productName: `Автоклик в течений 2 мин`,
-        productPrice: 50,
+        productUseful: 10,
+        productName: `Автоклик в течений 1 мин`,
+        productPrice: 0,
         productFunctionUseful: function() {
-            let timeForAutoClick = localStorage.getItem('timeForAutoClick');
             let autoClickLogic = setInterval(() => {
                 currentClicks--;
                 btnClick.dispatchEvent( new Event('click') );
+                localStorage.setItem('timeForAutoClick', ++timeForAutoClick);
+                
+                if(timeForAutoClick >= 10) {
+                    clearInterval(autoClickLogic);
+                    localStorage.setItem('timeForAutoClick', timeForAutoClick -= timeForAutoClick);
+                }
             }, 1000)
         }
     },
@@ -93,12 +106,11 @@ for(let i in productInfo) {
     `
 }
 
-// logic for market
-const marketItem = document.querySelectorAll('.market__item');
-const marketItemPrice = document.querySelectorAll('.market__item-price');
 
-for(let i = 0; i < marketItem.length; i++) {
-    marketItem[i].addEventListener('click', function() {
+// logic for market
+marketItemAll = document.querySelectorAll('.market__item');
+for(let i = 0; i < marketItemAll.length; i++) {
+    marketItemAll[i].addEventListener('click', function() {
         if (countMoney >= productInfo[i].productPrice) { 
             saveMoney(countMoney -= productInfo[i].productPrice);
             countMoneyOut.innerHTML = `${countMoney}$`;
@@ -110,6 +122,19 @@ for(let i = 0; i < marketItem.length; i++) {
 }
 
 
+// continue auto click after page reload
+if( timeForAutoClick && timeForAutoClick != 0 ) {
+    let autoClickLogic = setInterval(() => {
+        currentClicks--;
+        btnClick.dispatchEvent( new Event('click') );
+        localStorage.setItem('timeForAutoClick', ++timeForAutoClick);
+        
+        if(timeForAutoClick >= 10) {
+            clearInterval(autoClickLogic);
+            localStorage.setItem('timeForAutoClick', timeForAutoClick -= timeForAutoClick);
+        }
+    }, 1000)
+}
 
 
 
