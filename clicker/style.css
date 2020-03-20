@@ -135,7 +135,23 @@ textarea {
     background-color: #ccc;
 }
 
-@media (max-width: 500px) {
+@media (max-width: 1000px) {
+    .market__container {
+        width: 75%;
+    }
+}
+
+@media (max-width: 750px) {
+    .market__container {
+        width: 85%;
+    }
+}
+
+@media (max-width: 600px) {
+    body {
+        font-size: 14px;
+    }
+
     .market__container {
         width: 100%;
     }
