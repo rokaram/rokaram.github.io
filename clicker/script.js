@@ -6,6 +6,8 @@ const powerClickOut = document.querySelector('.gameplay__header-force');
 const btnClick = document.querySelector('.gameplay__main-btn');
 
 let autoclickProductIndex = localStorage.getItem('autoclickProductIndex');
+let timeForActiveProductCountOut = localStorage.getItem('timeForActiveProductCountOut');
+const timeForActiveProductToStay = 20;
 
 function enhancePowerOfClicker(i) {
     productInfo[i].productPrice *= 2;
@@ -14,44 +16,58 @@ function enhancePowerOfClicker(i) {
     powerClickOut.innerHTML = `Сила: ${pluser}`;
 }
 
+function timeForActiveProductInterval(i) {
+    let timeForActiveProduct = setInterval(() => {
+        marketItems[i].className = 'market__item--noactive';
+        
+        localStorage.setItem('timeForActiveProductCount', ++timeForActiveProductCount);
+
+        if ( !timeForActiveProductCountOut || timeForActiveProductCountOut <= 0 ) {
+            localStorage.setItem('timeForActiveProductCountOut', timeForActiveProductCountOut = timeForActiveProductToStay)
+        }
+
+        localStorage.setItem('timeForActiveProductCountOut', --timeForActiveProductCountOut);
+
+        productInfo[i].productPrice = `Будет доступно через: ${timeForActiveProductCountOut} сек`;
+        localStorage.setItem('productInfo', JSON.stringify(productInfo));
+        marketItemPrices[i].innerHTML = productInfo[i].productPrice;
+
+        if(timeForActiveProductCount >= timeForActiveProductToStay) {
+            productInfo[i].isActiveProduct = true;
+            marketItemPrices[i].innerHTML = `Доступен`;
+            localStorage.setItem('productInfo', JSON.stringify(productInfo));
+            localStorage.setItem('timeForActiveProductCount', timeForActiveProductCount = 0);
+            localStorage.setItem('clicksForActiveProduct', clicksForActiveProduct = 0);
+            clearInterval(timeForActiveProduct);
+        }
+    }, 1000);
+}
+
+function autoClickLogicInterval(i) {
+    let autoClickLogic = setInterval(() => {
+        currentClicks--;
+        btnClick.dispatchEvent( new Event('click') );
+        localStorage.setItem('timeForAutoClick', ++timeForAutoClick);
+        marketItemPrices[i].innerHTML = `В процессе выполнения`;
+
+        if(timeForAutoClick >= productInfo[i].productUseful) {
+            timeForActiveProductInterval(autoclickProductIndex);
+            clearInterval(autoClickLogic);
+            productInfo[autoclickProductIndex].isActiveProduct = false;
+            localStorage.setItem('timeForAutoClick', timeForAutoClick = 0);
+            localStorage.setItem('clicksForActiveProduct', clicksForActiveProduct = 1);
+         }
+    }, 1000);
+}
+
 function logicForAutocliker(i) {
     localStorage.setItem('autoclickProductIndex', autoclickProductIndex = i);
     localStorage.setItem('clicksForActiveProduct', clicksForActiveProduct++);
     let timeForActiveProductCount = localStorage.getItem('timeForActiveProductCount');
-    let timeForActiveProductCountOut = localStorage.getItem('timeForActiveProductCountOut');
 
-    if(clicksForActiveProduct == 1 && !productInfo[i].isActiveProduct) {
-        let timeForActiveProduct = setInterval(() => {
-            localStorage.setItem('timeForActiveProductCount', ++timeForActiveProductCount);
+    if(clicksForActiveProduct == 1 && !productInfo[i].isActiveProduct) timeForActiveProductInterval(i);
 
-            !timeForActiveProductCountOut ? localStorage.setItem('timeForActiveProductCountOut', timeForActiveProductCountOut = 20) : null
-
-            localStorage.setItem('timeForActiveProductCountOut', --timeForActiveProductCountOut)
-
-            if(timeForActiveProductCount >= 20) {
-                productInfo[i].isActiveProduct = true;
-                localStorage.setItem('productInfo', JSON.stringify(productInfo));
-                localStorage.setItem('timeForActiveProductCount', timeForActiveProductCount = 0);
-                localStorage.setItem('clicksForActiveProduct', clicksForActiveProduct = 0);
-                clearInterval(timeForActiveProduct);
-            }
-        }, 1000);
-    }
-
-    if(clicksForActiveProduct == 1 && productInfo[i].isActiveProduct) {
-        let autoClickLogic = setInterval(() => {
-            currentClicks--;
-            btnClick.dispatchEvent( new Event('click') );
-            localStorage.setItem('timeForAutoClick', ++timeForAutoClick);
-            
-            if(timeForAutoClick >= productInfo[i].productUseful) {
-                productInfo[i].isActiveProduct = false;
-                localStorage.setItem('timeForAutoClick', timeForAutoClick = 0);
-                localStorage.setItem('clicksForActiveProduct', clicksForActiveProduct = 0);
-                clearInterval(autoClickLogic);
-            }
-        }, 1000);
-    }
+    if(clicksForActiveProduct == 1 && productInfo[i].isActiveProduct) autoClickLogicInterval(i);
 }
 
 const productFunctions = [
@@ -75,7 +91,7 @@ if (!productInfo) {
         {
             productName: `Автоклик в течений 30 сек`,
             productUseful: 30,
-            productPrice: 'доступно через 2 мин',
+            productPrice: 'Доступен',
             isActiveProduct: false
         },
         {   
@@ -148,9 +164,8 @@ function saveMoney(isSave) {
     countMoney = localStorage.getItem('countMoney');
 }
 
-
 // information output after page reload
-if( currentClicks ) {
+if ( currentClicks ) {
     currentClicksOut.innerHTML = `Всего кликов: ${currentClicks}`;
     countMoneyOut.innerHTML = `${countMoney}$`;
     powerClickOut.innerHTML = `Сила: ${pluser}`;
@@ -159,8 +174,10 @@ if( currentClicks ) {
 btnClick.addEventListener('click', function() {
     localStorage.setItem('currentClicks', ++currentClicks);
     currentClicksOut.innerHTML = `Всего кликов: ${currentClicks}`;
+    
     countMoney = Number(countMoney);
     pluser = Number(pluser);
+    localStorage.setItem('pluser', pluser);
     saveMoney(countMoney += pluser);
     
     countMoney = localStorage.getItem('countMoney');
@@ -179,31 +196,29 @@ window.addEventListener('keydown', ({ key }) => {
 // continue auto click after page reload
 let timeForActiveProductCount = localStorage.getItem('timeForActiveProductCount');
 
-if( autoclickProductIndex && productInfo[autoclickProductIndex].isActiveProduct == false ) {
-    let timeForActiveProduct = setInterval(() => {
-        localStorage.setItem('timeForActiveProductCount', ++timeForActiveProductCount);
-
-        if(timeForActiveProductCount >= 20) {
-            productInfo[autoclickProductIndex].isActiveProduct = true;
-            localStorage.setItem('productInfo', JSON.stringify(productInfo));
-            localStorage.setItem('timeForActiveProductCount', timeForActiveProductCount = 0);
-            localStorage.setItem('clicksForActiveProduct', clicksForActiveProduct = 0);
-            clearInterval(timeForActiveProduct);
-        }
-    }, 1000);
+if ( autoclickProductIndex && !productInfo[autoclickProductIndex].isActiveProduct ) {
+    localStorage.setItem('clicksForActiveProduct', clicksForActiveProduct = 2);
+    timeForActiveProductInterval(autoclickProductIndex);
 }
 
-if( autoclickProductIndex && timeForAutoClick && timeForAutoClick != 0 ) {
+if ( autoclickProductIndex && timeForAutoClick && timeForAutoClick != 0 && productInfo[autoclickProductIndex].isActiveProduct == true ) {
+    productInfo[autoclickProductIndex].productPrice = `В процессе выполнения`;
+    localStorage.setItem('productInfo', JSON.stringify(productInfo));
+
+    marketItemPrices[autoclickProductIndex].innerHTML = productInfo[autoclickProductIndex].productPrice;
+
     let autoClickLogic = setInterval(() => {
         currentClicks--;
         btnClick.dispatchEvent( new Event('click') );
         localStorage.setItem('timeForAutoClick', ++timeForAutoClick);
-        
-        if(timeForAutoClick >= 30) {
-            clearInterval(autoClickLogic);
+
+        if(timeForAutoClick >= productInfo[autoclickProductIndex].productUseful) {
             productInfo[autoclickProductIndex].isActiveProduct = false;
+            localStorage.setItem('productInfo', JSON.stringify(productInfo));
             localStorage.setItem('timeForAutoClick', timeForAutoClick = 0);
-            localStorage.setItem('clicksForActiveProduct', clicksForActiveProduct = 0);
+            localStorage.setItem('clicksForActiveProduct', clicksForActiveProduct = 2);
+            timeForActiveProductInterval(autoclickProductIndex);
+            clearInterval(autoClickLogic);
         }
     }, 1000)
 }

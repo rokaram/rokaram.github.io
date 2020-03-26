@@ -130,6 +130,15 @@ textarea {
     justify-content: space-between;
 }
 
+.market__item--noactive {
+    cursor: pointer;
+    padding: 7px;
+    border: 1px solid #000;
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+}
+
 .market__item-img {
     width: 100%;
     background-color: #ccc;
