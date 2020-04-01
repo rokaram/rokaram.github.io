@@ -9,10 +9,13 @@ const reg = /(iPhone|Android|iPad|RIM)/;
 if (navigator.userAgent.match(reg)){
     isMobail = true;
     modal.classList.remove('hide');
+    document.querySelector('.settings-icon').classList.add('hide');
     modalItem.textContent = 'На данный момент мобильные устройства не поддерживают данное приложение :(';
 } else {
     isMobail = false;
 }
+
+if(!isMobail) {
 
 function mathRandom(min, max) {
     return Math.floor(Math.random() * (max - min) + min);
@@ -296,6 +299,7 @@ const settingsSpecifications = document.querySelectorAll('.settings__specificati
 const settingsLinkArrows = document.querySelectorAll('.settings__link-arrow');
 const settingsIcons = document.querySelectorAll('.settings-icon');
 const settingsIconWhite = document.querySelector('.settings-icon--white');
+const removeDataBtn = document.querySelector('.settings__specification-removedata');
 
 let isGamePause = JSON.parse(localStorage.getItem('isGamePause'));
 
@@ -306,6 +310,11 @@ for(let i = 0; i < settingsLinks.length; i++) {
         } else {
             settingsSpecifications[i].style.maxHeight = 0 + 'px';
         }
+
+        removeDataBtn.addEventListener('click', () => {
+            localStorage.clear();
+            location.reload();
+        });
 
         settingsSpecifications[i].classList.toggle('settings__specification--active');
         settingsLinkArrows[i].classList.toggle('settings__link-arrow--active');
@@ -357,4 +366,6 @@ if(isGamePause == true) {
     modal.classList.remove('hide');
     settings.classList.remove('hide');
     settingsIconWhite.classList.remove('hide');
+}
+
 }
