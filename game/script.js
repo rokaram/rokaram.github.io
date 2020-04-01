@@ -3,52 +3,79 @@
 const modal = document.querySelector('.modal');
 const modalItem = modal.querySelector('.modal__item');
 
+let isMobail;
+const reg = /(iPhone|Android|iPad|RIM)/;
+
+if (navigator.userAgent.match(reg)){
+    isMobail = true;
+    modal.classList.remove('hide');
+    modalItem.textContent = 'На данный момент мобильные устройства не поддерживают данное приложение :(';
+} else {
+    isMobail = false;
+}
+
+function mathRandom(min, max) {
+    return Math.floor(Math.random() * (max - min) + min);
+}
+
+const scoreText = document.querySelector('.score');
+const bestScoreText = document.querySelector('.best-score');
+
 const cvs = document.querySelector('.canvas');
 const ctx = cvs.getContext('2d');
 
-const playerOut = new Image();
-const groundOut = new Image();
-const obstacleOut = new Image();
+const playerOut = new Image(); playerOut.src = 'images/player.png';
+const groundOut = new Image(); groundOut.src = 'images/ground.png';
+const obstacleOut = new Image(); obstacleOut.src = 'images/obstacle.png';
+const settingsBlackOut = new Image(); settingsBlackOut.src = 'images/settings_black.png';
+const settingsWhiteOut = new Image(); settingsWhiteOut.src = 'images/settings_white.png';
 
-playerOut.src = 'images/player.png';
-groundOut.src = 'images/ground.png';
-obstacleOut.src = 'images/obstacle.png';
-
-let speedPlayer = 30;
-let grav = 1;
+const distanceBetweenObstacles = 200;
+let speedPlayer = 50;
+let grav = 2;
 
 let score = localStorage.getItem('score');
-let allScores = JSON.parse(localStorage.getItem('allScores'));
 let bestScore = localStorage.getItem('bestScore');
+let allScores = JSON.parse(localStorage.getItem('allScores'));
 
+
+// if new player
 if(!score) {
+    modalItem.innerHTML = `Добро пожаловать в игру<br> 'not Flappy Bird' <p class='small-text'>(Кликни сюда чтобы начать игру)</p>`;
+    modal.classList.remove('hide');
+
+    modal.addEventListener('click', () => { 
+        modal.classList.add('hide'); 
+    });
+
     localStorage.setItem('allScores', JSON.stringify([]));
     allScores = JSON.parse(localStorage.getItem('allScores'));
 
     localStorage.setItem('score', score = 0);
 }
 
-let distanceBetweenObstacles = 100;
 
+
+// default position for player
 let player = JSON.parse(localStorage.getItem('player'));
 
-if(!player || player == null) {
+function defaultPosForPlayer() {
     localStorage.setItem('player', JSON.stringify({
         x: 10,
-        y: cvs.height - 50,
-        width: 30,
-        height: 20
+        y: cvs.height - 115,
+        width: 70,
+        height: 50
     }));
 
     player = JSON.parse(localStorage.getItem('player'));
 }
 
-function defaultPosForPlayer() {
-    player.x = 10;
-    player.y = cvs.height - 50;
-    localStorage.setItem('player', JSON.stringify(player))
+if(!player) {
+    defaultPosForPlayer()
 }
 
+
+// default position for obstacles
 let obstacle = JSON.parse(localStorage.getItem('obstacle'));
 
 function defaultPosForObstacles() {
@@ -57,9 +84,9 @@ function defaultPosForObstacles() {
 
     obstacle[0] = {
         x: cvs.width,
-        y: cvs.height - 50,
-        width: 30,
-        height: 100
+        y: cvs.height - 130,
+        width: 65,
+        height: 300
     }
 }
 
@@ -71,144 +98,263 @@ let ground = [];
 
 ground[0] = {
     x: 0,
-    y: cvs.height - 30,
+    y: cvs.height - 70
 }
 
 ground[1] = {
     x: cvs.width,
-    y: cvs.height - 30,
+    y: cvs.height - 70
 }
 
-function loseWindow() {
-    let timerForRestart = 10;
-    let text;
+
+// what happend if you loos:
+function loosFunc() {
+    defaultPosForPlayer();
+    defaultPosForObstacles();
+    
+    allScores.push(Number(score));
+    allScores.sort().splice(0, allScores.length - 1);
+
+    localStorage.setItem('bestScore', allScores[0]);
+    localStorage.setItem('allScores', JSON.stringify(allScores));
+    localStorage.setItem('score', score = 0);
+
+    localStorage.setItem('timerForRestart', timerForRestart = 10);
+
+    location.reload();
+}
+
+// loos window open
+let timerForRestart = localStorage.getItem('timerForRestart');
+
+if(!timerForRestart) {
+    localStorage.setItem('timerForRestart', 10);
+    timerForRestart = localStorage.getItem('timerForRestart');
+}
+
+let IsOpenLoosWindow = false;
+
+function loosWindow() {
+    IsOpenLoosWindow = true;
 
     if(score > bestScore) {
-        text = `RE$PECT, ты чо проиграл) ну ладно хоть рекорд <br> Игра начнётся через: ${timerForRestart} сек. <br> Или просто кликни сюда`
+        modalItem.innerHTML = `Ты чо проиграл) ну ладно хоть рекорд <br> Игра начнётся через: ${timerForRestart} сек. <br> Или просто кликни сюда`
     } else {
-        text = `RE$PECT, ты чо проиграл) <br> Игра начнётся через: ${timerForRestart} сек. <br> Или просто кликни сюда`
+        modalItem.innerHTML = `Ты чо проиграл) <br> Игра начнётся через: ${timerForRestart} сек. <br> Или просто кликни сюда`;
     }
-
     modal.classList.remove('hide')
-    modalItem.innerHTML = text;
 
     setInterval(() => {
         if(timerForRestart > 0) {
-            timerForRestart--;
-            modalItem.innerHTML = text;
-            modal.addEventListener('click', () => { location.reload() });
+            localStorage.setItem('timerForRestart', --timerForRestart);
+            if(score > bestScore) {
+                modalItem.innerHTML = `Ты чо проиграл) ну ладно хоть рекорд <br> Игра начнётся через: ${timerForRestart} сек. <br> Или просто кликни сюда`
+            } else {
+                modalItem.innerHTML = `Ты чо проиграл) <br> Игра начнётся через: ${timerForRestart} сек. <br> Или просто кликни сюда`;
+            }
+
+            modal.addEventListener('click', () => loosFunc() );
         } else {
-            timerForRestart = 10;
-            location.reload();
+            localStorage.setItem('timerForRestart', timerForRestart = 10);
+            loosFunc();
         }
     }, 1000);
 }
 
-function mathRandom(min, max) {
-    return Math.floor(Math.random() * (max - min) + min);
+if(timerForRestart && timerForRestart < 10) {
+    loosWindow();
+
+    setInterval(() => {
+        drawGameInPause()
+    }, 0)
 }
 
-window.addEventListener('click', () => {
-    if(player.y >= cvs.height - 50) {
-        player.y -= 60;
-        localStorage.setItem('player', JSON.stringify(player))
-    }
-});
 
+// player move function
+function movePlayer(code) {
+    if(modal.classList.contains('hide')) {
+        if ((code === 'Space' || code === 'ArrowUp') && player.y >= cvs.height - 115) {
+            player.y -= 155;
+            localStorage.setItem('player', JSON.stringify(player));
+        } 
+        else if (code === 'ArrowRight' && player.x <= cvs.width - player.width / 2) {
+            player.x += speedPlayer;
+            localStorage.setItem('player', JSON.stringify(player));
+
+            for(let i = 0; i < obstacle.length; i++) {
+                if (player.x >= obstacle[i].x && player.x <= obstacle[i].x + player.width / 1.5) {
+                    localStorage.setItem('score', ++score);
+                }
+            }
+        } 
+        else if (code === 'ArrowLeft' && player.x >= 0) {
+            player.x -= speedPlayer;
+            localStorage.setItem('player', JSON.stringify(player));
+        }
+    }
+}
+
+
+function drawGameInPause() {
+    ctx.clearRect(0, 0, cvs.width, cvs.height);
+
+    for(let i = 0; i < ground.length; i++) {
+        ctx.drawImage(groundOut, ground[i].x, ground[i].y, cvs.width, 250);
+    }
+
+    ctx.drawImage(playerOut, player.x, player.y, player.width, player.height);
+
+    for(let i = 0; i < obstacle.length; i++) {
+        ctx.drawImage(obstacleOut, obstacle[i].x, obstacle[i].y, obstacle[i].width, obstacle[i].height);
+    }
+
+    localStorage.setItem('player', JSON.stringify(player))
+    scoreText.textContent = `Счёт: ${score}`;
+    bestScoreText.textContent = `Лучший счёт: ${allScores.length > 0 ? bestScore : score}`;
+}
+
+
+// key down to move
 window.addEventListener('keydown', ({ code }) => {
     code == 'F5' ? localStorage.clear() : null;
-    movePlayer(code)
+    movePlayer(code);
 });
 
-function movePlayer(code) {
-    if ((code == 'Space' || code == 'ArrowUp') && player.y >= cvs.height - 50) {
-        player.y -= 60;
-        localStorage.setItem('player', JSON.stringify(player))
-    } 
-    else if (code == 'ArrowRight' && player.x <= cvs.width - player.width - (player.width / 3)) {
-        player.x += speedPlayer;
-        localStorage.setItem('player', JSON.stringify(player))
 
-        for(let i = 0; i < obstacle.length; i++) {
-            if (player.x >= obstacle[i].x && player.x <= obstacle[i].x + player.width) {
-                localStorage.setItem('score', ++score);
-            }
-        }
-    } 
-    else if (code == 'ArrowLeft' && player.x >= player.width / 1.5) {
-        player.x -= speedPlayer
-        localStorage.setItem('player', JSON.stringify(player));
-    } 
-}
-
+// draw objects, logic for spawn objects and check for loos
 function drawGame() {
-    if(modal.classList.contains('hide')) {
-        ctx.clearRect(0, 0, cvs.offsetWidth, cvs.offsetHeight);
+    if(modal.classList.contains('hide') && !isMobail) {
+        ctx.clearRect(0, 0, cvs.width, cvs.height);
 
+        // logic for spawn ground and move ground
         for(let i = 0; i < ground.length; i++) {
-            ctx.drawImage(groundOut, ground[i].x, ground[i].y);
-            ground[i].x--
+            ctx.drawImage(groundOut, ground[i].x, ground[i].y, cvs.width, 250);
+            ground[i].x -= 2;
 
-            if(ground[i].x == -cvs.width) {
+            if(ground[i].x === -cvs.width) {
                 ground.push({
                     x: cvs.width,
-                    y: cvs.height - 30
+                    y: cvs.height - 70
                 });
             }
 
-            if(ground[i].x == 0) ground.shift()
+            if(ground[i].x === 0) ground.shift()
         }
 
         ctx.drawImage(playerOut, player.x, player.y, player.width, player.height);
 
+        // logic for spawn obstacle and move obstacle
         for(let i = 0; i < obstacle.length; i++) {
             ctx.drawImage(obstacleOut, obstacle[i].x, obstacle[i].y, obstacle[i].width, obstacle[i].height);
 
-            obstacle[i].x -= 1;
+            obstacle[i].x -= 2;
             localStorage.setItem('obstacle', JSON.stringify(obstacle));
 
-            if(obstacle[i].x == distanceBetweenObstacles) {
+            if(obstacle[i].x === distanceBetweenObstacles) {
                 obstacle.push({
                     x: cvs.width,
-                    y: mathRandom(obstacle[i].y + 5, obstacle[i].y - 6),
-                    width: 30,
-                    height: 100
+                    y: mathRandom(obstacle[i].y + 4, obstacle[i].y - 3),
+                    width: 65,
+                    height: 300
                 });    
             }
 
-            if (player.x == obstacle[i].x) {
+            if (player.x === obstacle[i].x) {
                 localStorage.setItem('score', ++score);
             }
 
-            if((player.x + player.width >= obstacle[i].x && player.x + player.width <= (obstacle[i].x + obstacle[i].width + player.width)) &&
-            (player.y + player.height >= obstacle[i].y)) {
-                loseWindow()
-
-                defaultPosForPlayer();
-                defaultPosForObstacles();
-                
-                allScores.push(Number(score));
-                allScores.sort().splice(0, allScores.length - 1);
-
-                localStorage.setItem('bestScore', allScores[0]);
-                localStorage.setItem('allScores', JSON.stringify(allScores));
-                localStorage.setItem('score', score = 0);
+            // check for loos
+            if((player.x + player.width >= obstacle[i].x 
+                && player.x + player.width <= (obstacle[i].x + obstacle[i].width + player.width)) 
+                && (player.y + player.height >= obstacle[i].y)) {
+                loosWindow()
             }
         }
 
-        if (player.y <= cvs.height - 50) {
+        // gravitation
+        if (player.y <= cvs.height - 115) {
             player.y += grav;
         }
 
         localStorage.setItem('player', JSON.stringify(player))
-
-        ctx.fillStyle = '#000';
-        ctx.font = '13px Verdana';
-        ctx.fillText(`Score: ${score}`, 5, 15);
-        ctx.fillText(`Best score: ${allScores.length > 0 ? bestScore : score}`, 5, 28);
+        scoreText.textContent = `Счёт: ${score}`;
+        bestScoreText.textContent = `Лучший счёт: ${allScores.length > 0 ? bestScore : score}`;
+    } else {
+        ctx.clearRect(0, 0, cvs.width, cvs.height);
+        ctx.drawImage(settingsWhiteOut, cvs.width - 60, 10, 50, 50);
+        drawGameInPause()
     }
 
     requestAnimationFrame(drawGame)
 }
 
 drawGame();
+
+const settings = document.querySelector('.settings');
+const settingsLinks = document.querySelectorAll('.settings__link');
+const settingsSpecifications = document.querySelectorAll('.settings__specification');
+const settingsLinkArrows = document.querySelectorAll('.settings__link-arrow');
+const settingsIcons = document.querySelectorAll('.settings-icon');
+const settingsIconWhite = document.querySelector('.settings-icon--white');
+
+let isGamePause = JSON.parse(localStorage.getItem('isGamePause'));
+
+for(let i = 0; i < settingsLinks.length; i++) {
+    settingsLinks[i].addEventListener('click', () => {
+        if(!settingsSpecifications[i].classList.contains('settings__specification--active')) {
+            settingsSpecifications[i].style.maxHeight = settingsSpecifications[i].scrollHeight + 'px';
+        } else {
+            settingsSpecifications[i].style.maxHeight = 0 + 'px';
+        }
+
+        settingsSpecifications[i].classList.toggle('settings__specification--active');
+        settingsLinkArrows[i].classList.toggle('settings__link-arrow--active');
+    });
+}
+
+for(let i = 0; i < settingsIcons.length; i++) {
+    settingsIcons[i].addEventListener('click', () => {
+        if(modal.classList.contains('hide')) {
+            modalItem.style.top = 25 + '%';
+            modalItem.style.transform = `translate(${-50}%, ${0}%)`;
+            localStorage.setItem('isGamePause', JSON.stringify(true));
+        } else {
+            localStorage.setItem('isGamePause', JSON.stringify(false));
+            modalItem.style.top = 50 + '%';
+            modalItem.style.transform = `translate(${-50}%, ${-50}%)`;
+        }
+
+        modal.classList.toggle('hide');
+        settings.classList.toggle('hide');
+        settingsIconWhite.classList.toggle('hide');
+    });
+}
+
+window.addEventListener('keydown', ({ code }) => {
+    if(code === 'Escape' && !IsOpenLoosWindow) {
+        if(modal.classList.contains('hide')) {
+            modalItem.style.top = 25 + '%';
+            modalItem.style.transform = `translate(${-50}%, ${0}%)`;
+            localStorage.setItem('isGamePause', JSON.stringify(true));
+        } else {
+            localStorage.setItem('isGamePause', JSON.stringify(false));
+            modalItem.style.top = 50 + '%';
+            modalItem.style.transform = `translate(${-50}%, ${-50}%)`;
+        }
+
+        modal.classList.toggle('hide');
+        settings.classList.toggle('hide');
+        settingsIconWhite.classList.toggle('hide');
+    }
+});
+
+
+if(isGamePause == true) {
+    modalItem.style.top = 25 + '%';
+    modalItem.style.transform = `translate(${-50}%, ${0}%)`;
+    localStorage.setItem('isGamePause', JSON.stringify(true));
+
+    modal.classList.remove('hide');
+    settings.classList.remove('hide');
+    settingsIconWhite.classList.remove('hide');
+}
