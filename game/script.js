@@ -9,13 +9,13 @@ const reg = /(iPhone|Android|iPad|RIM)/;
 if (navigator.userAgent.match(reg)){
     isMobail = true;
     modal.classList.remove('hide');
-    document.querySelector('.settings-icon').classList.add('hide');
     modalItem.textContent = 'На данный момент мобильные устройства не поддерживают данное приложение :(';
 } else {
     isMobail = false;
 }
 
 if(!isMobail) {
+document.querySelector('.settings-icon').classList.remove('hide');
 
 function mathRandom(min, max) {
     return Math.floor(Math.random() * (max - min) + min);
@@ -48,16 +48,14 @@ if(!score) {
     modal.classList.remove('hide');
 
     modal.addEventListener('click', () => { 
-        modal.classList.add('hide'); 
+        location.reload();
     });
 
     localStorage.setItem('allScores', JSON.stringify([]));
     allScores = JSON.parse(localStorage.getItem('allScores'));
 
-    localStorage.setItem('score', score = 0);
+    localStorage.setItem('score', 0);
 }
-
-
 
 // default position for player
 let player = JSON.parse(localStorage.getItem('player'));
@@ -73,9 +71,7 @@ function defaultPosForPlayer() {
     player = JSON.parse(localStorage.getItem('player'));
 }
 
-if(!player) {
-    defaultPosForPlayer()
-}
+if(!player) defaultPosForPlayer();
 
 
 // default position for obstacles
@@ -93,9 +89,7 @@ function defaultPosForObstacles() {
     }
 }
 
-if(!obstacle || obstacle.length == 0) {
-    defaultPosForObstacles()
-}
+if(!obstacle || obstacle.length == 0) defaultPosForObstacles();
 
 let ground = [];
 
@@ -120,9 +114,9 @@ function loosFunc() {
 
     localStorage.setItem('bestScore', allScores[0]);
     localStorage.setItem('allScores', JSON.stringify(allScores));
-    localStorage.setItem('score', score = 0);
+    localStorage.setItem('score', 0);
 
-    localStorage.setItem('timerForRestart', timerForRestart = 10);
+    localStorage.setItem('timerForRestart', 10);
 
     location.reload();
 }
@@ -135,10 +129,10 @@ if(!timerForRestart) {
     timerForRestart = localStorage.getItem('timerForRestart');
 }
 
-let IsOpenLoosWindow = false;
+let IsOpenLoosModal = false;
 
-function loosWindow() {
-    IsOpenLoosWindow = true;
+function loosModalOpen() {
+    IsOpenLoosModal = true;
 
     if(score > bestScore) {
         modalItem.innerHTML = `Ты чо проиграл) ну ладно хоть рекорд <br> Игра начнётся через: ${timerForRestart} сек. <br> Или просто кликни сюда`
@@ -158,18 +152,15 @@ function loosWindow() {
 
             modal.addEventListener('click', () => loosFunc() );
         } else {
-            localStorage.setItem('timerForRestart', timerForRestart = 10);
+            localStorage.setItem('timerForRestart', 10);
             loosFunc();
         }
     }, 1000);
 }
 
 if(timerForRestart && timerForRestart < 10) {
-    loosWindow();
-
-    setInterval(() => {
-        drawGameInPause()
-    }, 0)
+    loosModalOpen();
+    setInterval(() => drawGameInPause() , 0)
 }
 
 
@@ -218,15 +209,12 @@ function drawGameInPause() {
 
 
 // key down to move
-window.addEventListener('keydown', ({ code }) => {
-    code == 'F5' ? localStorage.clear() : null;
-    movePlayer(code);
-});
+window.addEventListener('keydown', ({ code }) => movePlayer(code) );
 
 
 // draw objects, logic for spawn objects and check for loos
 function drawGame() {
-    if(modal.classList.contains('hide') && !isMobail) {
+    if(modal.classList.contains('hide')) {
         ctx.clearRect(0, 0, cvs.width, cvs.height);
 
         // logic for spawn ground and move ground
@@ -241,7 +229,7 @@ function drawGame() {
                 });
             }
 
-            if(ground[i].x === 0) ground.shift()
+            if(ground[i].x === 0) ground.shift();
         }
 
         ctx.drawImage(playerOut, player.x, player.y, player.width, player.height);
@@ -270,7 +258,7 @@ function drawGame() {
             if((player.x + player.width >= obstacle[i].x 
                 && player.x + player.width <= (obstacle[i].x + obstacle[i].width + player.width)) 
                 && (player.y + player.height >= obstacle[i].y)) {
-                loosWindow()
+                loosModalOpen()
             }
         }
 
@@ -281,7 +269,7 @@ function drawGame() {
 
         localStorage.setItem('player', JSON.stringify(player))
         scoreText.textContent = `Счёт: ${score}`;
-        bestScoreText.textContent = `Лучший счёт: ${allScores.length > 0 ? bestScore : score}`;
+        bestScoreText.textContent = `Лучший счёт: ${allScores.length > 0 ? bestScore : 0}`;
     } else {
         ctx.clearRect(0, 0, cvs.width, cvs.height);
         ctx.drawImage(settingsWhiteOut, cvs.width - 60, 10, 50, 50);
@@ -303,6 +291,7 @@ const removeDataBtn = document.querySelector('.settings__specification-removedat
 
 let isGamePause = JSON.parse(localStorage.getItem('isGamePause'));
 
+// open settings links
 for(let i = 0; i < settingsLinks.length; i++) {
     settingsLinks[i].addEventListener('click', () => {
         if(!settingsSpecifications[i].classList.contains('settings__specification--active')) {
@@ -313,6 +302,7 @@ for(let i = 0; i < settingsLinks.length; i++) {
 
         removeDataBtn.addEventListener('click', () => {
             localStorage.clear();
+            defaultPosForPlayer();
             location.reload();
         });
 
@@ -321,44 +311,33 @@ for(let i = 0; i < settingsLinks.length; i++) {
     });
 }
 
-for(let i = 0; i < settingsIcons.length; i++) {
-    settingsIcons[i].addEventListener('click', () => {
-        if(modal.classList.contains('hide')) {
-            modalItem.style.top = 25 + '%';
-            modalItem.style.transform = `translate(${-50}%, ${0}%)`;
-            localStorage.setItem('isGamePause', JSON.stringify(true));
-        } else {
-            localStorage.setItem('isGamePause', JSON.stringify(false));
-            modalItem.style.top = 50 + '%';
-            modalItem.style.transform = `translate(${-50}%, ${-50}%)`;
-        }
+function openModal() {
+    if(modal.classList.contains('hide')) {
+        modalItem.style.top = 25 + '%';
+        modalItem.style.transform = `translate(${-50}%, ${0}%)`;
+        localStorage.setItem('isGamePause', JSON.stringify(true));
+    } else {
+        localStorage.setItem('isGamePause', JSON.stringify(false));
+        modalItem.style.top = 50 + '%';
+        modalItem.style.transform = `translate(${-50}%, ${-50}%)`;
+    }
 
-        modal.classList.toggle('hide');
-        settings.classList.toggle('hide');
-        settingsIconWhite.classList.toggle('hide');
-    });
+    modal.classList.toggle('hide');
+    settings.classList.toggle('hide');
+    settingsIconWhite.classList.toggle('hide');
+}
+
+// change settings icon
+for(let i = 0; i < settingsIcons.length; i++) {
+    settingsIcons[i].addEventListener('click', () => openModal());
 }
 
 window.addEventListener('keydown', ({ code }) => {
-    if(code === 'Escape' && !IsOpenLoosWindow) {
-        if(modal.classList.contains('hide')) {
-            modalItem.style.top = 25 + '%';
-            modalItem.style.transform = `translate(${-50}%, ${0}%)`;
-            localStorage.setItem('isGamePause', JSON.stringify(true));
-        } else {
-            localStorage.setItem('isGamePause', JSON.stringify(false));
-            modalItem.style.top = 50 + '%';
-            modalItem.style.transform = `translate(${-50}%, ${-50}%)`;
-        }
-
-        modal.classList.toggle('hide');
-        settings.classList.toggle('hide');
-        settingsIconWhite.classList.toggle('hide');
-    }
+    if(code === 'Escape' && !IsOpenLoosModal) openModal();
 });
 
 
-if(isGamePause == true) {
+if(isGamePause) {
     modalItem.style.top = 25 + '%';
     modalItem.style.transform = `translate(${-50}%, ${0}%)`;
     localStorage.setItem('isGamePause', JSON.stringify(true));
