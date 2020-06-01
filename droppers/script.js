@@ -176,6 +176,13 @@ window.addEventListener('mousemove', e => {
 	}
 });
 
+window.addEventListener('touchmove', e => {
+	mouseX = e.changedTouches[0].clientX;
+	mouseY = e.changedTouches[0].clientY;
+
+	droppers.drag(mouseX, mouseY);
+});
+
 
 const pauseBtn = document.querySelector('.pause');
 pauseBtn.addEventListener('click', () => isPauseGame ? (droppers.start(), pauseBtn.textContent = '||') : (droppers.pause() , pauseBtn.textContent = '>'));
