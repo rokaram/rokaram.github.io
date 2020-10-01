@@ -86,7 +86,7 @@ const enemy = {
         y: window.innerHeight / 2 - 40,
     },
     smallerSpeed: mathRandom.n(0.7, 1),
-    speed: isDoublePlayerMode ? player.speed : boll.speedY * mathRandom.n(0.9, 1),
+    speed: isDoublePlayerMode ? player.speed : boll.speedY * mathRandom.n(0.7, 1),
     score: 0
 }
 
@@ -185,7 +185,7 @@ function exitFromLobby() {
 
     pauseGame = true
     setTimeout(() => pauseGame = false , 1000)
-    boll.speedX = 20
+    boll.speedX = 30
 
     enemy.smallerSpeed = 0.9
     enemy.speed = isDoublePlayerMode ? player.speed : boll.speedY * mathRandom.n(0.7, 1)
