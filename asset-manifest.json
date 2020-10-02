@@ -1,0 +1,23 @@
+{
+  "files": {
+    "main.css": "/droame/static/css/main.523f09c5.chunk.css",
+    "main.js": "/droame/static/js/main.37878cf4.chunk.js",
+    "main.js.map": "/droame/static/js/main.37878cf4.chunk.js.map",
+    "runtime-main.js": "/droame/static/js/runtime-main.3437be57.js",
+    "runtime-main.js.map": "/droame/static/js/runtime-main.3437be57.js.map",
+    "static/js/2.a925df73.chunk.js": "/droame/static/js/2.a925df73.chunk.js",
+    "static/js/2.a925df73.chunk.js.map": "/droame/static/js/2.a925df73.chunk.js.map",
+    "index.html": "/droame/index.html",
+    "precache-manifest.e0cf797520d96ef5b90ef554635620e4.js": "/droame/precache-manifest.e0cf797520d96ef5b90ef554635620e4.js",
+    "service-worker.js": "/droame/service-worker.js",
+    "static/css/main.523f09c5.chunk.css.map": "/droame/static/css/main.523f09c5.chunk.css.map",
+    "static/js/2.a925df73.chunk.js.LICENSE.txt": "/droame/static/js/2.a925df73.chunk.js.LICENSE.txt",
+    "static/media/logo.svg": "/droame/static/media/logo.ee7cd8ed.svg"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.3437be57.js",
+    "static/js/2.a925df73.chunk.js",
+    "static/css/main.523f09c5.chunk.css",
+    "static/js/main.37878cf4.chunk.js"
+  ]
+}
