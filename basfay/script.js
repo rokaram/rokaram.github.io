@@ -18,13 +18,14 @@ basketImg.src = 'images/basket.png'
 const sumFoods = 3
 let missingScore = 0
 let score = 0
+let speedFood = 8
 
 let apple = []
 for(let i = 0; i < sumFoods; i++) {
     apple.push({
         width: 50,
         height: 50,
-        x: random(10, cvs.width - 10),
+        x: random(10, cvs.width - 55),
         y: random(10, cvs.height + 10),
     })
 }
@@ -34,8 +35,8 @@ for(let i = 0; i < sumFoods; i++) {
     banana.push({
         width: 50,
         height: 50,
-        x: random(10, cvs.width - 10),
-        y: random(10, cvs.height + 10),
+        x: random(10, cvs.width - 55),
+        y: random(10, cvs.height + 50),
     })
 }
 
@@ -53,7 +54,7 @@ function random(min, max) {
 }
 
 function setDefaultX(item) {
-    item.x = random(10, cvs.width - 10)
+    item.x = random(10, cvs.width - 55)
 }
 
 function outScore(score) {
@@ -67,7 +68,7 @@ function outMissingScore(missingScore) {
 }
 
 function gravFood(item) {
-    item.y += 10
+    item.y += speedFood
 
     if(item.y > cvs.height) {
         setDefaultX(item)
