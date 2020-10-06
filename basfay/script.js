@@ -18,7 +18,7 @@ basketImg.src = 'images/basket.png'
 const sumFoods = 3
 let missingScore = 0
 let score = 0
-let speedFood = 8
+let speedFood = 6
 
 let apple = []
 for(let i = 0; i < sumFoods; i++) {
@@ -94,7 +94,7 @@ function moveBasket(x) {
 function bump() {
     for(let i = 0; i < foods.length; i++) {
         if(basket.x < foods[i].x + foods[i].width && basket.x + basket.width > foods[i].x
-            && basket.y < foods[i].y + foods[i].height) {
+            && basket.y < foods[i].y + foods[i].height && basket.y + basket.height / 4 > foods[i].y + foods[i].height) {
             score++
             setDefaultX(foods[i])
             foods[i].y = -foods[i].height
