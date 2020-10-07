@@ -1,0 +1,45 @@
+.header {
+    position: absolute;
+    top: 0;left: 0;right: 0;
+}
+
+.header__inner {
+    padding: 10px;
+    text-align: left;
+}
+
+.nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.nav__link {
+    font-size: 20px;
+}
+
+.cvs {
+    background: #fff;
+}
+
+.pauseBtn {
+    position: relative;
+    z-index: 15;
+    width: 50px;
+    cursor: pointer;
+}
+
+.modal {
+    top: 0;left: 0;bottom: 0;right: 0;
+    z-index: 10;
+    position: absolute;
+    background: rgba(0, 0, 0, 0.9);
+    color: #fff;
+    font-size: 25px;
+}
+
+.modal__inner {
+    position: absolute;
+    left: 50%;top: 50%;
+    transform: translate(-50%, -50%);
+}

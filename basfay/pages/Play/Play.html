@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="Play.css">
+    <link rel="stylesheet" href="../../style.css">
+    <title>Basfay</title>
+</head>
+<body>
+    <div class="container">
+        <canvas class="cvs"></canvas>
+
+        <header class="header">
+            <div class="header__inner">
+                <ul class="nav">
+                    <ul>
+                        <li class="nav__link">Собрано: <span class="score"></span></li>
+                        <li class="nav__link">Пропущено: <span class="score-missing"></span></li>
+                    </ul>
+                    <ul>
+                        <img class="pauseBtn" src="../../images/pause-button.png" alt="Pause">
+                    </ul>
+                </ul>
+            </div>
+        </header>
+
+        <div class="modal hide">
+            <div class="modal__inner">
+                <ul class="pause">
+                    <li class="pause__link">
+                        <a href="../../index.html">Выйти</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+<script src="Play.js"></script>
+</body>
+</html>
