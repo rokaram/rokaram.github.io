@@ -1,8 +1,13 @@
 'use strict'
 
 const container = document.querySelector('.container')
-const pauseModal = document.querySelector('.modal')
+const modalDom = document.querySelector('.modal')
+const pauseModal = document.querySelector('.pause')
+const looseModal = document.querySelector('.loose')
 const pauseBtn = document.querySelector('.pauseBtn')
+const exitBtn = document.querySelector('.exitBtn')
+const restartBtn = document.querySelector('.restartBtn')
+const looseTimerOut = document.querySelector('.loose-timer')
 
 const cvs = document.querySelector('.cvs')
 const ctx = cvs.getContext('2d')
@@ -26,10 +31,13 @@ const sumFoods = 3
 
 let missingScore = localStorage.getItem('missingScore') || 0
 let score = localStorage.getItem('score') || 0
-let allScores = localStorage.getItem('allScores') || 0
+let allScores = JSON.parse(localStorage.getItem('allScores')) || []
 let bestScore = localStorage.getItem('bestScore') || 0
 let sizeFood = 40
-let pauseGame = localStorage.getItem('pauseGame') || false
+let pauseGame = JSON.parse(localStorage.getItem('pauseGame')) || false
+let typePause = localStorage.getItem('typePause')
+let timeInGame = localStorage.getItem('timeInGame') || 0
+let looseTimer = localStorage.getItem('looseTimer') || 6
 
 let cauliflower = []
 for(let i = 0; i < sumFoods; i++) {
@@ -77,12 +85,107 @@ function random(min, max) {
     return Math.round(Math.random() * (min - max) + max)
 }
 
-function checkPause() {
-    return !pauseModal.classList.contains('hide') ? true : localStorage.getItem('pauseGame')
-}
-
 function setDefaultX(item) {
     item.x = random(10, cvs.width - item.width + 5)
+}
+
+function setScoresNull() {
+    localStorage.setItem('score', score = 0)
+    localStorage.setItem('missingScore', missingScore = 0)
+}
+
+function setAllScores() {
+    if(score < 1 && missingScore < 1) return
+
+    allScores.push({score, missingScore})
+    localStorage.setItem('allScores', JSON.stringify(allScores))
+}
+
+function exit() {
+    setAllScores()
+    setScoresNull()
+    localStorage.setItem('pauseGame', false)
+    location.href = '../../index.html'
+}
+
+function restartGame() {
+    foods.forEach(el => setDefaultY(el))
+    setScoresNull()
+}
+
+function setDefaultY(item) {
+    item.y = random(-cvs.height - 10, -sizeFood)
+}
+
+function timingInGame() {
+    setInterval(() => localStorage.setItem('timeInGame', ++timeInGame), 1000)
+}
+
+const modal = {
+    open(type = 'pause') {
+        modalDom.classList.remove('hide')
+        localStorage.setItem('pauseGame', pauseGame = true)
+        localStorage.setItem('typePause', type)
+
+        switch(type) {
+            case 'pause':
+                pauseModal.classList.remove('hide')
+                break
+            case 'loose':
+                looseModal.classList.remove('hide')
+                modalDom.classList.add('z20')
+                break
+        }
+    },
+    close(type = 'pause') {
+        modalDom.classList.add('hide')
+        localStorage.setItem('pauseGame', pauseGame = false)
+        localStorage.setItem('typePause', type)
+
+        switch(type) {
+            case 'pause':
+                pauseModal.classList.add('hide')
+                break
+            case 'loose':
+                looseModal.classList.add('hide')
+                modalDom.classList.remove('z20')
+                break
+        }
+    },
+    toggle(type = 'pause') {
+        modalDom.classList.toggle('hide')
+        localStorage.setItem('pauseGame', !pauseGame)
+        localStorage.setItem('typePause', type)
+
+        switch(type) {
+            case 'pause':
+                pauseModal.classList.toggle('hide')
+                break
+            case 'loose':
+                looseModal.classList.toggle('hide')
+                modalDom.classList.toggle('z20')
+                break
+        }
+    },
+}
+
+function loose() {
+    if(missingScore >= 10) {
+        localStorage.setItem('pauseGame', true)
+        allScores.push({score, missingScore})
+        localStorage.setItem('allScores', JSON.stringify(allScores))
+        modal.open('loose')
+
+        let timer = setInterval(() => {
+            localStorage.setItem('looseTimer', --looseTimer)
+            looseTimerOut.textContent = looseTimer
+            if(looseTimer <= 0) {
+                clearInterval(timer)
+                localStorage.setItem('looseTimer', 6)
+                exit()
+            }
+        }, 1000)
+    }
 }
 
 function outScore(score) {
@@ -99,10 +202,11 @@ function gravFood(item) {
     item.y += item.speed
 
     if(item.y > cvs.height) {
-        setDefaultX(item)
-        localStorage.setItem('missingScore', missingScore++)
+        localStorage.setItem('missingScore', ++missingScore)
         item.y = 0 - item.height
         item.speed = random(4, 7)
+        setDefaultX(item)
+        loose()
     }
 }
 
@@ -127,8 +231,9 @@ function bump() {
     for(let i = 0; i < foods.length; i++) {
         if(basket.x < foods[i].x + foods[i].width && basket.x + basket.width > foods[i].x
             && basket.y < foods[i].y + foods[i].height && basket.y + basket.height > foods[i].y + foods[i].height) {
-            localStorage.setItem('score', score++)
+            localStorage.setItem('score', ++score)
             setDefaultX(foods[i])
+
             foods[i].speed = random(4, 7)
             foods[i].y = -foods[i].height
         }
@@ -136,25 +241,39 @@ function bump() {
 }
 
 function drawGame() {
-    pauseGame = checkPause()
+    pauseGame = JSON.parse(localStorage.getItem('pauseGame')) || false
+
+    outScore(score)
+    outMissingScore(missingScore)
 
     if(!pauseGame) {
         ctx.clearRect(0, 0, cvs.width, cvs.height)
         ctx.drawImage(basketImg, basket.x, basket.y, basket.width, basket.height)
 
-        drawFoods()
         bump()
-        outScore(score)
-        outMissingScore(missingScore)
+        drawFoods()
     }
     requestAnimationFrame(drawGame)
+}
+
+if(pauseGame && typePause) {
+    modal.open(typePause)
+    loose()
 }
 
 cvs.addEventListener('mousemove', e => moveBasket(e.offsetX))
 cvs.addEventListener('touchmove', e => moveBasket(e.changedTouches[0].clientX))
 
 pauseBtn.addEventListener('click', () => {
-    pauseModal.classList.toggle('hide')
+    modal.toggle()
 })
 
+exitBtn.addEventListener('click', () => exit())
+
+restartBtn.addEventListener('click', () => {
+    restartGame()
+    modal.toggle()
+})
+
+timingInGame()
 drawGame()

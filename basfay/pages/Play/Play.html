@@ -6,7 +6,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="Play.css">
     <link rel="stylesheet" href="../../style.css">
-    <title>Basfay</title>
+    <title>Basfay ~ Играть</title>
 </head>
 <body>
     <div class="container">
@@ -17,7 +17,7 @@
                 <ul class="nav">
                     <ul>
                         <li class="nav__link">Собрано: <span class="score"></span></li>
-                        <li class="nav__link">Пропущено: <span class="score-missing"></span></li>
+                        <li class="nav__link">Пропущено: <span class="score-missing"></span> / 10</li>
                     </ul>
                     <ul>
                         <img class="pauseBtn" src="../../images/pause-button.png" alt="Pause">
@@ -28,11 +28,21 @@
 
         <div class="modal hide">
             <div class="modal__inner">
-                <ul class="pause">
+                <ul class="pause hide">
+                    <h2 class="pause__title">Basfay</h2>
+
                     <li class="pause__link">
-                        <a href="../../index.html">Выйти</a>
+                        <a class="exitBtn">Выйти</a>
+                    </li>
+                    <li class="pause__link">
+                        <button class="restartBtn">Начать заново</button>
                     </li>
                 </ul>
+
+                <div class="loose hide">
+                    <p class="loose-text">Ты проиграл. \0_0/</p>
+                    <p class="loose-timer"></p>
+                </div>
             </div>
         </div>
     </div>

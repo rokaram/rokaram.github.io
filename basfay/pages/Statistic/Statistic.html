@@ -5,11 +5,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="Statistic.css">
-    <title>Statistic</title>
+    <link rel="stylesheet" href="../../style.css">
+    <title>Basfay ~ Статистика</title>
 </head>
 <body>
     <div class="container">
-        
+        <div class="stata">
+            <div class="stata__inner">
+                <div class="stata__header">
+                    <a href="../../index.html">
+                        <img class="stata__arrow" src="../../images/left-arrow.png" alt="Назад">
+                    </a>
+                    <h1 class="stata__header-title">Статистика</h1>
+                </div>
+
+                <ul class="stata__list">
+                    <li class="stata__item">Всего собрано: <span class="stata__data collectedScore"></span></li>
+                    <li class="stata__item">Всего пропущено: <span class="stata__data missingScore"></span></li>
+                    <li class="stata__item">Рекорд собранных: <span class="stata__data bestScore"></span></li>
+
+                    <li class="stata__item">Времени в игре: <span class="stata__data timeInGame"></span></li>
+                </ul>
+            </div>
+        </div>
     </div>
+
+    <script src="Statistic.js"></script>
 </body>
 </html>

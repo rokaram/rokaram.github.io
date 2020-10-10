@@ -1,0 +1,27 @@
+.stata {
+    padding: 0 5% 0 5%;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+}
+
+.stata__header {
+    margin-bottom: 20px;
+}
+
+.stata__item {
+    margin: 5px 0;
+    font-size: 18px;
+    word-break: break-word;
+}
+
+.stata__data {
+    font-size: 21px;
+    font-weight: 400;
+}
+
+.stata__arrow {
+    width: 30px;
+    cursor: pointer;
+    margin-bottom: 5px;
+}
