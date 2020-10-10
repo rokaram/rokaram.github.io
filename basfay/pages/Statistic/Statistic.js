@@ -15,4 +15,4 @@ let bestScore = allScores.map(el => el.score).sort((a, b) => a - b).slice(-1) ||
 collectedScoreOut.innerText = collectedScoresSum
 missingScoreOut.innerText = missingScoresSum
 bestScoreOut.innerText = bestScore
-timeInGameOut.innerText = timeInGame > 60 ? `${Math.round(timeInGame / 60)} минут(ы)` : `${timeInGame} секунд`
+timeInGameOut.innerText = timeInGame > 60 ? `${Math.round(timeInGame / 60)} мин` : `${timeInGame} секунд`

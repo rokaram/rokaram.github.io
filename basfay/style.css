@@ -6,6 +6,7 @@ body {
     color: rgb(235, 235, 235);
     background: rgb(41, 41, 41);
     overflow: hidden;
+    user-select: none;
 }
 
 * {

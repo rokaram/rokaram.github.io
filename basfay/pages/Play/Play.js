@@ -172,8 +172,6 @@ const modal = {
 function loose() {
     if(missingScore >= 10) {
         localStorage.setItem('pauseGame', true)
-        allScores.push({score, missingScore})
-        localStorage.setItem('allScores', JSON.stringify(allScores))
         modal.open('loose')
 
         let timer = setInterval(() => {
@@ -181,6 +179,7 @@ function loose() {
             looseTimerOut.textContent = looseTimer
             if(looseTimer <= 0) {
                 clearInterval(timer)
+                setAllScores()
                 localStorage.setItem('looseTimer', 6)
                 exit()
             }
@@ -190,12 +189,12 @@ function loose() {
 
 function outScore(score) {
     const scoreText = document.querySelector('.score')
-    scoreText.innerText = score
+    scoreText.textContent = score
 }
 
 function outMissingScore(missingScore) {
     const missingScoreText = document.querySelector('.score-missing')
-    missingScoreText.innerText = missingScore
+    missingScoreText.textContent = missingScore
 }
 
 function gravFood(item) {
@@ -203,23 +202,22 @@ function gravFood(item) {
 
     if(item.y > cvs.height) {
         localStorage.setItem('missingScore', ++missingScore)
-        item.y = 0 - item.height
+        item.y = -item.height
         item.speed = random(4, 7)
         setDefaultX(item)
         loose()
     }
 }
 
-function drawFoods() {
+function drawFoods(drawers) {
     for(let i = 0; i < sumFoods; i++) {
-        ctx.drawImage(cauliflowerImg, cauliflower[i].x, cauliflower[i].y, cauliflower[i].width, cauliflower[i].height)
-        gravFood(cauliflower[i])
-
-        ctx.drawImage(appleImg, apple[i].x, apple[i].y, apple[i].width, apple[i].height)
-        gravFood(apple[i])
-
-        ctx.drawImage(bananaImg, banana[i].x, banana[i].y, banana[i].width, banana[i].height)
-        gravFood(banana[i])
+        for(let k = 0; k < drawers.length; k++) {
+            let foodImg = drawers[k][0]
+            let food = drawers[k][1][i]
+            
+            ctx.drawImage(foodImg, food.x, food.y, food.width, food.height)
+            gravFood(food)
+        }
     }
 }
 
@@ -251,7 +249,7 @@ function drawGame() {
         ctx.drawImage(basketImg, basket.x, basket.y, basket.width, basket.height)
 
         bump()
-        drawFoods()
+        drawFoods([[cauliflowerImg, cauliflower], [appleImg, apple], [bananaImg, banana]])
     }
     requestAnimationFrame(drawGame)
 }
