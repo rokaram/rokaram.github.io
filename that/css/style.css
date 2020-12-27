@@ -25,25 +25,23 @@ body {
     margin-bottom: 40px;
 }
 
+.intro__block {
+    display: inline-flex;
+}
+
 .intro__updateBtn {
     cursor: pointer;
     max-width: 40px;
-    animation: updateBtn 2s ease infinite;
+    transition: all .2s ease;
 }
 
-@keyframes updateBtn {
-    0% {
-        transform: scale(1);
-    }
-    50% {
-        transform: scale(1.2);
-    }
-    100% {
-        transform: scale(1);
-    }
+.intro__updateBtn:hover {
+    padding-top: 5px;
+    margin-bottom: -5px;
 }
 
 .intro__title-letter {
     cursor: pointer;
     transition: all .2s ease;
 }
+
