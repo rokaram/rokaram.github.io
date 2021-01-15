@@ -1,14 +1,22 @@
 'use strict'
 
-const colors = ['#DC143C', '#C71585', '#FFD700', '#FF8C00', '#EE82EE', '#32CD32']
+const documentWrapper = document.querySelector('.wrapper')
+const loader = document.querySelector('.loader')
+
+document.addEventListener("DOMContentLoaded", () => {
+    documentWrapper.style.display = 'block'
+    loader.style.display = 'hide'
+})
+
+const colors = ['#d62828', '#C71585', '#FFD700', '#FF8C00', '#EE82EE', '#32CD32', '#57c4e5']
 const text = document.querySelector('.intro__title')
 const updateBtn = document.querySelector('.intro__updateBtn')
+const destroyBtn = document.querySelector('.intro__destroyBtn')
 const introBlock = document.querySelector('.intro__block')
-const titleAnim = 'headShake'
 
-const rand = (min, max) => {
-    return Math.round(Math.random() * (max - min) + min)
-}
+let isAnimPhrase = true
+
+const rand = (min, max) => Math.round(Math.random() * (max - min) + min)
 
 const anim = (htmlEl, animName) => {
     htmlEl.classList.remove(animName, 'animated')
@@ -17,9 +25,7 @@ const anim = (htmlEl, animName) => {
 
 const splitClass = (htmlEl, className) => {
     const text = htmlEl.textContent.split('')
-    const classedText = text.map(el => {
-        return `<span class='${className}'>${el}</span>`
-    })
+    const classedText = text.map(el => `<span class='${className}'>${el}</span>`)
     htmlEl.innerHTML = classedText.join('')
 }
 
@@ -29,10 +35,10 @@ const multicolorLet = htmlEl => {
     const text = htmlEl.children.length ? htmlEl.children : htmlEl
     if(text.length) {
         for(let i = 0; i < text.length; i++) {
-            text[i].style.color = `${colors[rand(0, 5)]}`
+            text[i].style.color = `${colors[rand(0, colors.length - 1)]}`
         }
     } else {
-        text.style.color = `${colors[rand(0, 5)]}`
+        text.style.color = `${colors[rand(0, colors.length - 1)]}`
     }
 }
 
@@ -56,21 +62,18 @@ multicolsizeLet(text)
 
 updateBtn.addEventListener('click', () => {
     multicolsizeLet(text)
-    anim(text, titleAnim)
+    anim(text, 'headShake')
     anim(updateBtn, 'jello')
 })
 
 const textLets = document.querySelectorAll('.intro__title-letter')
 
 textLets.forEach(el => {
-    el.addEventListener('mouseover', () => multicolsizeLet(el))
-    el.addEventListener('touchmove', () => multicolsizeLet(el))
+    el.addEventListener('mouseover', () => isAnimPhrase && multicolsizeLet(el))
+    el.addEventListener('touchmove', () => isAnimPhrase && multicolsizeLet(el))
 })
 
-introBlock.addEventListener('mouseover', () => {
-    text.classList.add('tada', 'animated')
-})
+introBlock.addEventListener('mouseover', () => isAnimPhrase && text.classList.add('tada', 'animated'))
+introBlock.addEventListener('mouseout', () => text.classList.remove('tada', 'animated'))
 
-introBlock.addEventListener('mouseout', () => {
-    text.classList.remove('tada', 'animated')
-})
+
