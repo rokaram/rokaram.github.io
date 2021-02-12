@@ -17,7 +17,7 @@ let isAnimPhrase = true
 
 const rand = (min, max) => Math.round(Math.random() * (max - min) + min)
 
-const anim = (htmlEl, animName) => {
+const startAnim = (htmlEl, animName) => {
     htmlEl.classList.remove(animName, 'animated')
     setTimeout(() => htmlEl.classList.add(animName, 'animated'), 0)
 }
@@ -61,8 +61,8 @@ multicolsizeLet(title)
 
 updateBtn.addEventListener('click', () => {
     multicolsizeLet(title)
-    anim(title, 'headShake')
-    anim(updateBtn, 'jello')
+    startAnim(title, 'headShake')
+    startAnim(updateBtn, 'jello')
 })
 
 const textLets = document.querySelectorAll('.intro__title-letter')
