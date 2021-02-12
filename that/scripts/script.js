@@ -5,13 +5,12 @@ const loader = document.querySelector('.loader')
 
 document.addEventListener("DOMContentLoaded", () => {
     documentWrapper.style.display = 'block'
-    loader.style.display = 'hide'
+    loader.style.display = 'none'
 })
 
 const colors = ['#d62828', '#C71585', '#FFD700', '#FF8C00', '#EE82EE', '#32CD32', '#57c4e5']
-const text = document.querySelector('.intro__title')
+const title = document.querySelector('.intro__title')
 const updateBtn = document.querySelector('.intro__updateBtn')
-const destroyBtn = document.querySelector('.intro__destroyBtn')
 const introBlock = document.querySelector('.intro__block')
 
 let isAnimPhrase = true
@@ -24,32 +23,32 @@ const anim = (htmlEl, animName) => {
 }
 
 const splitClass = (htmlEl, className) => {
-    const text = htmlEl.textContent.split('')
-    const classedText = text.map(el => `<span class='${className}'>${el}</span>`)
+    const title = htmlEl.textContent.split('')
+    const classedText = title.map(el => `<span class='${className}'>${el}</span>`)
     htmlEl.innerHTML = classedText.join('')
 }
 
-splitClass(text, "intro__title-letter")
+splitClass(title, "intro__title-letter")
 
 const multicolorLet = htmlEl => {
-    const text = htmlEl.children.length ? htmlEl.children : htmlEl
-    if(text.length) {
-        for(let i = 0; i < text.length; i++) {
-            text[i].style.color = `${colors[rand(0, colors.length - 1)]}`
+    const title = htmlEl.children.length ? htmlEl.children : htmlEl
+    if(title.length) {
+        for(let i = 0; i < title.length; i++) {
+            title[i].style.color = `${colors[rand(0, colors.length - 1)]}`
         }
     } else {
-        text.style.color = `${colors[rand(0, colors.length - 1)]}`
+        title.style.color = `${colors[rand(0, colors.length - 1)]}`
     }
 }
 
 const multisizeLet = htmlEl => {
-    const text = htmlEl.children.length ? htmlEl.children : htmlEl
-    if(text.length) {
-        for(let i = 0; i < text.length; i++) {
-            text[i].style.fontSize = `${rand(30, 50)}px`
+    const title = htmlEl.children.length ? htmlEl.children : htmlEl
+    if(title.length) {
+        for(let i = 0; i < title.length; i++) {
+            title[i].style.fontSize = `${rand(30, 50)}px`
         }
     } else {
-        text.style.fontSize = `${rand(30, 50)}px`
+        title.style.fontSize = `${rand(30, 50)}px`
     }
 }
 
@@ -58,11 +57,11 @@ const multicolsizeLet = htmlEl => {
     multisizeLet(htmlEl)
 }
 
-multicolsizeLet(text)
+multicolsizeLet(title)
 
 updateBtn.addEventListener('click', () => {
-    multicolsizeLet(text)
-    anim(text, 'headShake')
+    multicolsizeLet(title)
+    anim(title, 'headShake')
     anim(updateBtn, 'jello')
 })
 
@@ -73,7 +72,6 @@ textLets.forEach(el => {
     el.addEventListener('touchmove', () => isAnimPhrase && multicolsizeLet(el))
 })
 
-introBlock.addEventListener('mouseover', () => isAnimPhrase && text.classList.add('tada', 'animated'))
-introBlock.addEventListener('mouseout', () => text.classList.remove('tada', 'animated'))
-
+introBlock.addEventListener('mouseover', () => isAnimPhrase && title.classList.add('tada', 'animated'))
+introBlock.addEventListener('mouseout', () => title.classList.remove('tada', 'animated'))
 

@@ -58,7 +58,7 @@ body {
 
 .intro__title-letter {
     cursor: pointer;
-    transition: font-size .2s ease;
+    transition: font-size .3s ease;
 }
 
 .loader {
