@@ -3,11 +3,11 @@
 const container = document.querySelector('.container')
 const modalDom = document.querySelector('.modal')
 const pauseModal = document.querySelector('.pause')
-const looseModal = document.querySelector('.loose')
+const loseModal = document.querySelector('.lose')
 const pauseBtn = document.querySelector('.pauseBtn')
 const exitBtn = document.querySelector('.exitBtn')
 const restartBtn = document.querySelector('.restartBtn')
-const looseTimerOut = document.querySelector('.loose-timer')
+const loseTimerOut = document.querySelector('.lose-timer')
 
 const cvs = document.querySelector('.cvs')
 const ctx = cvs.getContext('2d')
@@ -16,70 +16,88 @@ cvs.width = container.clientWidth
 cvs.height = container.clientHeight
 
 const appleImg = new Image()
-appleImg.src = '../../images/apple.png'
+appleImg.src = '../images/apple.png'
 
 const bananaImg = new Image()
-bananaImg.src = '../../images/banana.png'
+bananaImg.src = '../images/banana.png'
 
 const cauliflowerImg = new Image()
-cauliflowerImg.src = '../../images/cauliflower.png'
+cauliflowerImg.src = '../images/cauliflower.png'
+
+const bombImg = new Image()
+bombImg.src = '../images/bomb.png'
 
 const basketImg = new Image()
-basketImg.src = '../../images/basket.png'
+basketImg.src = '../images/basket.png'
 
-const sumFoods = 3
+const sumFoods = 2
+const sumJunks = 5
 
 let missingScore = localStorage.getItem('missingScore') || 0
 let score = localStorage.getItem('score') || 0
 let allScores = JSON.parse(localStorage.getItem('allScores')) || []
 let bestScore = localStorage.getItem('bestScore') || 0
-let sizeFood = 40
+let playedMatches = localStorage.getItem('playedMatches') || 0
+let sizeObjects = 35
 let pauseGame = JSON.parse(localStorage.getItem('pauseGame')) || false
 let typePause = localStorage.getItem('typePause')
 let timeInGame = localStorage.getItem('timeInGame') || 0
-let looseTimer = localStorage.getItem('looseTimer') || 6
+let loseTimer = localStorage.getItem('loseTimer') || 6
 
 let cauliflower = []
 for(let i = 0; i < sumFoods; i++) {
     cauliflower.push({
-        width: sizeFood,
-        height: sizeFood,
-        x: random(10, cvs.width - sizeFood + 5),
-        y: random(-cvs.height - 10, -sizeFood),
-        speed: random(4, 7)
+        width: sizeObjects,
+        height: sizeObjects,
+        x: random(10, cvs.width - sizeObjects + 5),
+        y: random(-cvs.height - 10, -sizeObjects),
+        speed: random(5, 8)
     })
 }
 
 let apple = []
 for(let i = 0; i < sumFoods; i++) {
     apple.push({
-        width: sizeFood,
-        height: sizeFood,
-        x: random(10, cvs.width - sizeFood + 5),
-        y: random(-cvs.height - 10, -sizeFood),
-        speed: random(4, 7)
+        width: sizeObjects,
+        height: sizeObjects,
+        x: random(10, cvs.width - sizeObjects + 5),
+        y: random(-cvs.height - 10, -sizeObjects),
+        speed: random(5, 8)
     })
 }
 
 let banana = []
 for(let i = 0; i < sumFoods; i++) {
     banana.push({
-        width: sizeFood,
-        height: sizeFood,
-        x: random(10, cvs.width - sizeFood + 5),
-        y: random(-cvs.height - 10, -sizeFood),
+        width: sizeObjects,
+        height: sizeObjects,
+        x: random(10, cvs.width - sizeObjects + 5),
+        y: random(-cvs.height - 10, -sizeObjects),
+        speed: random(5, 8)
+    })
+}
+
+let bomb = []
+for(let i = 0; i < sumJunks; i++) {
+    bomb.push({
+        width: sizeObjects,
+        height: sizeObjects,
+        x: random(10, cvs.width - sizeObjects + 5),
+        y: random(-cvs.height - 10, -sizeObjects),
         speed: random(4, 7)
     })
 }
 
 let basket = {
-    width: 100,
+    width: 80,
     height: 40,
     x: cvs.width / 2,
-    y: cvs.height - sizeFood
+    y: cvs.height - sizeObjects
 }
 
 const foods = [...cauliflower, ...apple, ...banana]
+const junks = [...bomb]
+const objects = [...foods, ...junks]
 
 function random(min, max) {
     return Math.round(Math.random() * (min - max) + max)
@@ -102,19 +120,18 @@ function setAllScores() {
 }
 
 function exit() {
-    setAllScores()
     setScoresNull()
     localStorage.setItem('pauseGame', false)
-    location.href = '../../index.html'
+    location.href = '../index.html'
 }
 
 function restartGame() {
-    foods.forEach(el => setDefaultY(el))
+    objects.forEach(el => setDefaultY(el))
     setScoresNull()
 }
 
 function setDefaultY(item) {
-    item.y = random(-cvs.height - 10, -sizeFood)
+    item.y = random(-cvs.height - 10, -sizeObjects)
 }
 
 function timingInGame() {
@@ -131,8 +148,8 @@ const modal = {
             case 'pause':
                 pauseModal.classList.remove('hide')
                 break
-            case 'loose':
-                looseModal.classList.remove('hide')
+            case 'lose':
+                loseModal.classList.remove('hide')
                 modalDom.classList.add('z20')
                 break
         }
@@ -146,8 +163,8 @@ const modal = {
             case 'pause':
                 pauseModal.classList.add('hide')
                 break
-            case 'loose':
-                looseModal.classList.add('hide')
+            case 'lose':
+                loseModal.classList.add('hide')
                 modalDom.classList.remove('z20')
                 break
         }
@@ -161,26 +178,26 @@ const modal = {
             case 'pause':
                 pauseModal.classList.toggle('hide')
                 break
-            case 'loose':
-                looseModal.classList.toggle('hide')
+            case 'lose':
+                loseModal.classList.toggle('hide')
                 modalDom.classList.toggle('z20')
                 break
         }
     },
 }
 
-function loose() {
-    if(missingScore >= 10) {
+function lose() {
+    if(missingScore >= 5) {
+        localStorage.setItem('playedMatches', ++playedMatches)
         localStorage.setItem('pauseGame', true)
-        modal.open('loose')
+        modal.open('lose')
 
         let timer = setInterval(() => {
-            localStorage.setItem('looseTimer', --looseTimer)
-            looseTimerOut.textContent = looseTimer
-            if(looseTimer <= 0) {
+            localStorage.setItem('loseTimer', --loseTimer)
+            loseTimerOut.textContent = loseTimer
+            if(loseTimer <= 0) {
                 clearInterval(timer)
-                setAllScores()
-                localStorage.setItem('looseTimer', 6)
+                localStorage.setItem('loseTimer', 0)
                 exit()
             }
         }, 1000)
@@ -201,22 +218,28 @@ function gravFood(item) {
     item.y += item.speed
 
     if(item.y > cvs.height) {
-        localStorage.setItem('missingScore', ++missingScore)
         item.y = -item.height
         item.speed = random(4, 7)
         setDefaultX(item)
-        loose()
     }
 }
 
-function drawFoods(drawers) {
+function drawObjects(foods, junks) {
     for(let i = 0; i < sumFoods; i++) {
-        for(let k = 0; k < drawers.length; k++) {
-            let foodImg = drawers[k][0]
-            let food = drawers[k][1][i]
-            
-            ctx.drawImage(foodImg, food.x, food.y, food.width, food.height)
-            gravFood(food)
+        for(let k = 0; k < foods.length; k++) {
+            let objectImg = foods[k][0]
+            let object = foods[k][1][i]
+            ctx.drawImage(objectImg, object.x, object.y, object.width, object.height)
+            gravFood(object)
+        }
+    }
+
+    for(let i = 0; i < sumJunks; i++) {
+        for(let k = 0; k < junks.length; k++) {
+            let objectImg = junks[k][0]
+            let object = junks[k][1][i]
+            ctx.drawImage(objectImg, object.x, object.y, object.width, object.height)
+            gravFood(object)
         }
     }
 }
@@ -238,6 +261,19 @@ function bump() {
     }
 }
 
+function bumpJunk() {
+    for(let i = 0; i < junks.length; i++) {
+        if(basket.x < junks[i].x + junks[i].width && basket.x + basket.width > junks[i].x
+            && basket.y < junks[i].y + junks[i].height && basket.y + basket.height > junks[i].y + junks[i].height) {
+            localStorage.setItem('missingScore', ++missingScore)
+            junks[i].y = -junks[i].height
+            junks[i].speed = random(4, 7)
+            setDefaultX(junks[i])
+            lose()
+        }
+    }
+}
+
 function drawGame() {
     pauseGame = JSON.parse(localStorage.getItem('pauseGame')) || false
 
@@ -249,14 +285,15 @@ function drawGame() {
         ctx.drawImage(basketImg, basket.x, basket.y, basket.width, basket.height)
 
         bump()
-        drawFoods([[cauliflowerImg, cauliflower], [appleImg, apple], [bananaImg, banana]])
+        bumpJunk()
+        drawObjects([[cauliflowerImg, cauliflower], [appleImg, apple], [bananaImg, banana]], [[bombImg, bomb]])
     }
     requestAnimationFrame(drawGame)
 }
 
 if(pauseGame && typePause) {
     modal.open(typePause)
-    loose()
+    lose()
 }
 
 cvs.addEventListener('mousemove', e => moveBasket(e.offsetX))
