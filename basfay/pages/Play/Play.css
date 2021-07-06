@@ -61,17 +61,18 @@
 }
 
 .pause__title {
-    font-size: 40px;
-    margin-bottom: 15%;
+    font-size: 45px;
+    margin-bottom: 10%;
 }
 
-.loose {
+.lose {
     position: absolute;
     width: 100%;
 }
 
-.loose-text {
-    margin-bottom: 3%;
+.lose-text {
+    margin-top: -5%;
+    margin-bottom: 10px;
 }
 
 .z20 {
