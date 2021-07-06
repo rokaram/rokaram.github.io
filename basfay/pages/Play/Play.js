@@ -198,12 +198,10 @@ function lose() {
         
         let bestScore = allScores.map(el => el.score).sort((a, b) => a - b)[allScores.length - 1] || 0
 
-        if(bestScore < score) {
+        if(bestScore < score) 
             loseText.innerHTML = `У вас новый рекорд: ${score}`
-        } else {
-            loseText.innerHTML = `Ваш счёт: ${score} <br>
-            Рекорд: ${bestScore}`
-        }
+        else
+            loseText.innerHTML = `Ваш счёт: ${score} <br>Рекорд: ${bestScore}`
 
         setAllScores()
 
